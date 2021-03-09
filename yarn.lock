@@ -2395,6 +2395,13 @@
     "create-hash" "^1.1.0"
     "safe-buffer" "^5.1.2"
 
+"buefy@^0.9.4":
+  "integrity" "sha512-LRSIYVNrKTPQhmNRegASkntX+ObtZ7aSSA/3cybDKXzGtPNy8g8cl2tp79Rl8/LBVH/KkRT5rmmzJ21nxz9IcQ=="
+  "resolved" "https://registry.npmjs.org/buefy/-/buefy-0.9.4.tgz"
+  "version" "0.9.4"
+  dependencies:
+    "bulma" "0.9.1"
+
 "buffer-from@^1.0.0":
   "integrity" "sha512-MQcXEUbCKtEo7bhqEs6560Hyd4XaovZlO/k9V3hjVUF/zwW7KBVdSK4gIt/bzwS9MbR5qob+F5jusZsb0YQK2A=="
   "resolved" "https://registry.npmjs.org/buffer-from/-/buffer-from-1.1.1.tgz"
@@ -2456,6 +2463,11 @@
   "integrity" "sha1-hZgoeOIbmOHGZCXgPQF0eI9Wnug="
   "resolved" "https://registry.npmjs.org/builtin-status-codes/-/builtin-status-codes-3.0.0.tgz"
   "version" "3.0.0"
+
+"bulma@0.9.1":
+  "integrity" "sha512-LSF69OumXg2HSKl2+rN0/OEXJy7WFEb681wtBlNS/ulJYR27J3rORHibdXZ6GVb/vyUzzYK/Arjyh56wjbFedA=="
+  "resolved" "https://registry.npmjs.org/bulma/-/bulma-0.9.1.tgz"
+  "version" "0.9.1"
 
 "bytes@3.0.0":
   "integrity" "sha1-0ygVQE1olpn4Wk6k+odV3ROpYEg="
