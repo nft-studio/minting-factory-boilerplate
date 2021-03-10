@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <img style="width:30%" src="../assets/logo.png">
+    <img style="width:30%" src="../assets/logo.jpg">
     <Mint />
   </div>
 </template>
