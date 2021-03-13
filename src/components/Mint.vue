@@ -4,7 +4,7 @@
       <b>Welcome back</b><br /><i style="font-size: 12px">{{ account }}</i>
       <hr />
       <div style="padding: 0 20px">
-        <b-field v-if="!fileToMint.name" >
+        <b-field v-if="!fileToMint.name">
           <b-upload v-model="fileToMint" expanded drag-drop>
             <section class="section">
               <div class="content has-text-centered">
@@ -13,7 +13,6 @@
             </section>
           </b-upload>
         </b-field>
-
         <b-field label="Name">
           <b-input v-model="name"></b-input>
         </b-field>
@@ -26,21 +25,21 @@
         </b-field>
         <b-button
           type="is-primary"
-          v-if="ipfsFile && ipfsMetadata"
+          v-if="ipfsFile && ipfsMetadata && !isMinting"
           expanded
           v-on:click="mint"
           >MINT!</b-button
         >
         <b-button
           type="is-primary"
-          v-if="!ipfsFile && !ipfsMetadata"
+          v-if="!ipfsFile && !ipfsMetadata && !isUploadingIPFS"
           expanded
           v-on:click="uploadFile"
           >Upload file to IPFS</b-button
         >
         <b-button
           type="is-primary"
-          v-if="ipfsFile && !ipfsMetadata"
+          v-if="ipfsFile && !ipfsMetadata && !isUploadingMetadata"
           expanded
           v-on:click="createJson"
           >Upload metadata to IPFS</b-button
@@ -50,15 +49,26 @@
         </div>
         <div v-if="ipfsFile">
           File IPFS hash is:
-          <b><a :href="'https://ipfs.io/ipfs/' + ipfsFile" target="_blank">{{
-            ipfsFile
-          }}</a></b>
+          <b
+            ><a :href="'https://ipfs.io/ipfs/' + ipfsFile" target="_blank">{{
+              ipfsFile
+            }}</a></b
+          >
         </div>
         <div v-if="ipfsMetadata">
           Metadata IPFS hash is:
-          <b><a :href="'https://ipfs.io/ipfs/' + ipfsMetadata" target="_blank">{{
-            ipfsMetadata
-          }}</a></b>
+          <b
+            ><a
+              :href="'https://ipfs.io/ipfs/' + ipfsMetadata"
+              target="_blank"
+              >{{ ipfsMetadata }}</a
+            ></b
+          >
+        </div>
+        <div v-if="isMinting">Minting NFT, please wait...</div>
+        <div v-if="isUploadingIPFS">Uploading file to IPFS, please wait...</div>
+        <div v-if="isUploadingMetadata">
+          Uploading metadata to IPFS, please wait...
         </div>
       </div>
     </div>
@@ -82,11 +92,14 @@ export default {
   name: "Mint",
   data() {
     return {
-      web3: new Web3(process.env.VUE_APP_NETWORK),
+      web3: new Web3(window.ethereum),
       contractAddress: process.env.VUE_APP_SMART_CONTRACT_ADDRESS,
       account: "",
       contract: {},
       fileToMint: {},
+      isUploadingIPFS: false,
+      isUploadingMetadata: false,
+      isMinting: false,
       name: "",
       ipfsFile: "",
       ipfsMetadata: "",
@@ -114,7 +127,8 @@ export default {
     },
     async uploadFile() {
       const app = this;
-      if (app.fileToMint.name) {
+      if (app.fileToMint.name && !app.isUploadingIPFS) {
+        app.isUploadingIPFS = true;
         const formData = new FormData();
         formData.append("file", app.fileToMint);
         axios({
@@ -126,6 +140,7 @@ export default {
           },
         }).then(function (response) {
           app.ipfsFile = response.data.Hash;
+          app.isUploadingIPFS = false;
         });
       } else {
         alert("Select a file first!");
@@ -133,7 +148,12 @@ export default {
     },
     async createJson() {
       const app = this;
-      if (app.name !== "" && app.description !== "") {
+      if (
+        app.name !== "" &&
+        app.description !== "" &&
+        !app.isUploadingMetadata
+      ) {
+        app.isUploadingMetadata = true;
         const formData = new FormData();
         formData.append(
           "metadata",
@@ -153,6 +173,7 @@ export default {
           },
         }).then(function (response) {
           app.ipfsMetadata = response.data.Hash;
+          app.isUploadingMetadata = false;
         });
       } else {
         alert("Please add name and description!");
@@ -160,14 +181,17 @@ export default {
     },
     async mint() {
       const app = this;
-      try {
-        let minted = await app.contract.methods
-          .mintLoop(app.ipfsMetadata)
-          .send({ from: this.account });
-        alert("Successfully minted at: " + minted.transactionHash);
-        this.toMint = "";
-      } catch (e) {
-        alert(e);
+      if (!app.isMinting) {
+        app.isMinting = true
+        try {
+          let minted = await app.contract.methods
+            .mintOpera(app.ipfsMetadata)
+            .send({ from: this.account });
+          alert("Successfully minted at: " + minted.transactionHash);
+          app.isMinting = false
+        } catch (e) {
+          alert(e);
+        }
       }
     },
   },
