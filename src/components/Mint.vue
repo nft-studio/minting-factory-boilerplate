@@ -13,6 +13,13 @@
             </section>
           </b-upload>
         </b-field>
+        <b-field name="License" style="width:100%">
+          <b-select placeholder="Select a license" v-model="license" style="width:100%">
+            <option style="width:100%" v-for="option in licenses" :value="option" :key="option">
+              {{ option }}
+            </option>
+          </b-select>
+        </b-field>
         <b-field label="Name">
           <b-input v-model="name"></b-input>
         </b-field>
@@ -96,6 +103,16 @@ export default {
       contractAddress: process.env.VUE_APP_SMART_CONTRACT_ADDRESS,
       account: "",
       contract: {},
+      license: "",
+      licenses: [
+        "CC BY",
+        "CC BY-SA",
+        "CC BY-NC",
+        "CC BY-NC-SA",
+        "CC BY-ND",
+        "CC BY-NC-ND",
+        "CC0",
+      ],
       fileToMint: {},
       isUploadingIPFS: false,
       isUploadingMetadata: false,
@@ -162,6 +179,12 @@ export default {
             description: app.description,
             image: "https://ipfs.io/ipfs/" + app.ipfsFile,
             external_url: "https://nftstudi.io/#/opera/" + app.ipfsFile,
+            attributes: [
+              {
+                trait_type: "License",
+                value: app.license,
+              },
+            ],
           })
         );
         axios({
@@ -182,13 +205,13 @@ export default {
     async mint() {
       const app = this;
       if (!app.isMinting) {
-        app.isMinting = true
+        app.isMinting = true;
         try {
           let minted = await app.contract.methods
             .mintOpera(app.ipfsMetadata)
             .send({ from: this.account });
           alert("Successfully minted at: " + minted.transactionHash);
-          app.isMinting = false
+          app.isMinting = false;
         } catch (e) {
           alert(e);
         }
